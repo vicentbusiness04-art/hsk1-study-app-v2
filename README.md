@@ -2,6 +2,19 @@
 
 Una aplicación interactiva y completa para dominar el examen HSK1. Esta versión incluye **audio**, **ejercicios de lectura** y un diseño más avanzado.
 
+## 🔊 Sistema de Audio (TTS)
+
+La aplicación utiliza el motor **Youdao TTS** para generar la pronunciación del mandarín. 
+
+> **Nota:** El sistema de audio está en fase de refinamiento. Debido a restricciones de red, políticas de "Auto-play" de los navegadores o limitaciones del servidor externo, la reproducción puede no ser 100% estable en todos los dispositivos.
+
+**Detalles técnicos:**
+- **Motor principal:** Youdao DictVoice API.
+- **Formato:** Streaming de audio MP3 dinámico.
+- **Estado:** Funcional para palabras sueltas y frases cortas. Las frases muy largas pueden presentar retardos o bloqueos dependiendo de la conexión.
+
+Si el audio no suena, asegúrate de haber interactuado (clic) con la página al menos una vez para otorgar permisos de reproducción al navegador.
+
 ## 🚀 Cómo poner en marcha la aplicación
 
 Sigue estos pasos en orden para ejecutar la app en tu ordenador:
