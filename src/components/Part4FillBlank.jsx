@@ -50,14 +50,15 @@ export default function Part4FillBlank({ question, onAnswer }) {
             <div className="flex-1">
               <div className="text-[10px] text-teal-600 mb-0.5">{q.pinyin}</div>
               <div className="text-base text-gray-800 flex items-center gap-2 flex-wrap">
-                  {q.text.split('(  )').map((part, i, arr) => (
+                  {/* Buscamos ( ) o （ ） indistintamente */}
+                  {q.text.split(/[(（]\s*[)）]/g).map((part, i, arr) => (
                       <span key={i} className="flex items-center gap-1">
                           {part}
                           {i < arr.length - 1 && (
                               <select 
                                 value={selectedAnswers[q.id] || ""}
                                 onChange={(e) => handleSelect(q.id, e.target.value)}
-                                className="inline-block w-10 h-8 border-b-2 border-teal-400 bg-teal-50 text-center font-bold text-teal-600 outline-none cursor-pointer rounded"
+                                className="inline-block min-w-[3rem] h-8 border-b-2 border-teal-400 bg-teal-50 text-center font-bold text-teal-600 outline-none cursor-pointer rounded px-1"
                               >
                                 <option value=""></option>
                                 {options.map(o => (
@@ -67,7 +68,7 @@ export default function Part4FillBlank({ question, onAnswer }) {
                           )}
                       </span>
                   ))}
-                  <AudioButton text={q.text.replace('(  )', '')} className="scale-75" />
+                  <AudioButton text={q.text.replace(/[(（]\s*[)）]/g, ' ')} className="scale-75" />
               </div>
             </div>
           </div>
