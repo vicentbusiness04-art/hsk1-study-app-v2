@@ -3,7 +3,7 @@ import { readingQuestions } from '../data/readingQuestions';
 import FeedbackModal from './FeedbackModal';
 import Part1TrueFalse from './Part1TrueFalse';
 import Part2Matching from './Part2Matching';
-import Part3MultipleChoice from './Part3MultipleChoice';
+import Part3MatchingText from './Part3MatchingText';
 import Part4FillBlank from './Part4FillBlank';
 import { CheckCircle2 } from 'lucide-react';
 
@@ -142,7 +142,7 @@ export default function ReadingSection() {
                     <Part2Matching question={currentQuestion} onAnswer={handleAnswer} />
                 )}
                 {currentQuestion.type === 'matching-text' && (
-                    <Part3MultipleChoice question={currentQuestion} onAnswer={handleAnswer} />
+                    <Part3MatchingText question={currentQuestion} onAnswer={handleAnswer} />
                 )}
                 {currentQuestion.type === 'fill-blank-group' && (
                     <Part4FillBlank question={currentQuestion} onAnswer={handleAnswer} />
