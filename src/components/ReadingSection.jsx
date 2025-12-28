@@ -84,11 +84,27 @@ export default function ReadingSection() {
     setScore(s => s + correctCount);
     setTotalPossibleScore(t => t + incrementTotal);
 
+    // Determinar el mensaje de explicación
+    let explanationMsg = "";
+    
+    if (incrementTotal === 1) {
+        // Parte 1: Usar la explicación específica de la pregunta si existe
+        // Si acertó o falló, siempre mostramos la explicación educativa
+        explanationMsg = currentQuestion.explanation || (correctCount > 0 ? "¡Correcto!" : "Incorrecto.");
+    } else {
+        // Partes de grupo: Mostrar resumen de aciertos
+        explanationMsg = `Has acertado ${correctCount} de ${incrementTotal}.`;
+        if (correctCount === incrementTotal) explanationMsg += " ¡Excelente trabajo!";
+    }
+
     setFeedback({
-      isCorrect: correctCount > 0,
-      explanation: correctCount === incrementTotal 
-        ? "¡Excelente! Todo correcto." 
-        : `Has acertado ${correctCount} de ${incrementTotal}.`
+      isCorrect: correctCount > 0, // En grupos, consideramos "correcto" si al menos hay 1 acierto para no ser tan duros visualmente, o podemos ponerlo estricto.
+      // Mejor: visualmente verde si todo bien, rojo si falló algo? 
+      // FeedbackModal usa isCorrect para el color. 
+      // Para grupos, pongamos verde solo si > 50% o algo así. 
+      // Pero mantengamos la lógica simple anterior: isCorrect = correctCount > 0
+      isCorrect: correctCount === incrementTotal, // Seamos estrictos para el color verde global
+      explanation: explanationMsg
     });
   };
 
