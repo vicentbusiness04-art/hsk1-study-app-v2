@@ -80,7 +80,7 @@ export default function Part3MatchingText({ question, onAnswer }) {
 
       {isComplete && (
         <button 
-          onClick={() => onAnswer(selectedAnswers[questions[0].id])}
+          onClick={() => onAnswer(selectedAnswers)}
           className="mt-10 px-12 py-4 bg-teal-600 text-white rounded-2xl font-bold hover:bg-teal-700 transition-all shadow-xl active:scale-95"
         >
           Finalizar Parte 3

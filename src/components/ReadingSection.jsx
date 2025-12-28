@@ -14,23 +14,37 @@ export default function ReadingSection() {
   const [score, setScore] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
 
+  const [totalPossibleScore, setTotalPossibleScore] = useState(0);
+
   // Filter questions by active part
   const questionsForPart = readingQuestions.filter(q => q.part === activePart);
   const currentQuestion = questionsForPart[currentQuestionIndex];
 
   const handleAnswer = (userAnswer) => {
-    // Para partes con múltiples preguntas, validamos según la lógica del componente
-    // En Part 1 es feedback inmediato. En las otras es al final.
-    const isCorrect = Array.isArray(currentQuestion.answer) 
-        ? true // Simplificación para grupos
-        : userAnswer === currentQuestion.answer;
-    
-    if (isCorrect) {
-      setScore(s => s + (currentQuestion.questions?.length || 1));
+    let correctCount = 0;
+    let incrementTotal = 0;
+
+    if (typeof userAnswer === 'object' && !Array.isArray(userAnswer)) {
+        // Para grupos (Partes 2, 3, 4)
+        const subQuestions = currentQuestion.sentences || currentQuestion.questions;
+        subQuestions.forEach(sq => {
+            if (userAnswer[sq.id] === sq.answer) correctCount++;
+        });
+        incrementTotal = subQuestions.length;
+    } else {
+        // Para individuales (Parte 1)
+        if (userAnswer === currentQuestion.answer) correctCount = 1;
+        incrementTotal = 1;
     }
+    
+    setScore(s => s + correctCount);
+    setTotalPossibleScore(t => t + incrementTotal);
+
     setFeedback({
-      isCorrect,
-      explanation: currentQuestion.explanation || "¡Buen trabajo completando esta sección!"
+      isCorrect: correctCount > 0,
+      explanation: correctCount === incrementTotal 
+        ? "¡Excelente! Todo correcto." 
+        : `Has acertado ${correctCount} de ${incrementTotal}.`
     });
   };
 
@@ -47,6 +61,7 @@ export default function ReadingSection() {
       setActivePart(part);
       setCurrentQuestionIndex(0);
       setScore(0);
+      setTotalPossibleScore(0);
       setIsFinished(false);
       setFeedback(null);
   };
@@ -54,6 +69,7 @@ export default function ReadingSection() {
   const restartPart = () => {
     setCurrentQuestionIndex(0);
     setScore(0);
+    setTotalPossibleScore(0);
     setIsFinished(false);
   };
 
@@ -84,7 +100,7 @@ export default function ReadingSection() {
             <h2 className="text-2xl font-bold text-gray-800 mb-2">¡Parte {activePart} Completada!</h2>
             
             <div className="text-4xl font-bold text-teal-600 mb-8">
-                {score} / {questionsForPart.length}
+                {score} / {totalPossibleScore}
             </div>
 
             <button 

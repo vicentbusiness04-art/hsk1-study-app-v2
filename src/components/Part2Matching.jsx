@@ -78,9 +78,7 @@ export default function Part2Matching({ question, onAnswer }) {
       {Object.keys(selectedAnswers).length === sentences.length && (
           <button 
             onClick={() => {
-                // Verificamos si la respuesta de la pregunta actual es correcta
-                // El padre espera una respuesta. Por simplicidad validamos la última interacción
-                onAnswer(selectedAnswers[sentences[sentences.length-1].id]);
+                onAnswer(selectedAnswers);
             }}
             className="mt-8 px-8 py-3 bg-teal-600 text-white rounded-xl font-bold hover:bg-teal-700 transition-all shadow-lg"
           >

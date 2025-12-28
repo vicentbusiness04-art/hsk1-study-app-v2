@@ -77,7 +77,7 @@ export default function Part4FillBlank({ question, onAnswer }) {
 
       {isComplete && (
         <button 
-          onClick={() => onAnswer(selectedAnswers[questions[0].id])}
+          onClick={() => onAnswer(selectedAnswers)}
           className="mt-8 px-10 py-4 bg-teal-600 text-white rounded-2xl font-bold hover:bg-teal-700 transition-all shadow-xl active:scale-95"
         >
           Finalizar Examen
