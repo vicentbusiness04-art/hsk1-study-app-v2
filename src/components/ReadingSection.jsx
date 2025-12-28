@@ -110,7 +110,32 @@ export default function ReadingSection() {
                     </div>
                 </div>
 
-                {currentQuestion.type === 'true-false' && (
+    {activePart === 1 && (
+        <div className="mb-6 text-center">
+            <h3 className="text-lg font-bold text-teal-800 tracking-tight">第一部分 — Parte 1</h3>
+            <p className="text-sm text-gray-500">¿El dibujo coincide con la palabra? (Verdadero/Falso)</p>
+        </div>
+    )}
+    {activePart === 2 && (
+        <div className="mb-6 text-center">
+            <h3 className="text-lg font-bold text-teal-800 tracking-tight">第二部分 — Parte 2</h3>
+            <p className="text-sm text-gray-500">Relaciona cada frase con su imagen correspondiente (A-F)</p>
+        </div>
+    )}
+    {activePart === 3 && (
+        <div className="mb-6 text-center">
+            <h3 className="text-lg font-bold text-teal-800 tracking-tight">第三部分 — Parte 3</h3>
+            <p className="text-sm text-gray-500">Relaciona las preguntas de la izquierda con las respuestas de la derecha</p>
+        </div>
+    )}
+    {activePart === 4 && (
+        <div className="mb-6 text-center">
+            <h3 className="text-lg font-bold text-teal-800 tracking-tight">第四部分 — Parte 4</h3>
+            <p className="text-sm text-gray-500">Completa las frases eligiendo la palabra correcta del recuadro</p>
+        </div>
+    )}
+
+    {currentQuestion.type === 'true-false' && (
                     <Part1TrueFalse question={currentQuestion} onAnswer={handleAnswer} />
                 )}
                 {currentQuestion.type === 'matching-image' && (
