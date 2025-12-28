@@ -1,20 +1,18 @@
 export const readingQuestions = [
   // PART 1: Word + Image (True/False)
-  // Exam H10901, questions 21-25
   {
     id: 21,
     part: 1,
     type: 'true-false',
-    question: { text: '写', pinyin: 'xiě', image: 'https://img.icons8.com/color/144/writing.png' },
+    question: { text: '写', pinyin: 'xiě', image: '✍️' },
     answer: true,
-    example: { text: '电视', pinyin: 'diànshì', image: 'https://img.icons8.com/color/144/television.png', answer: false },
     explanation: "El carácter '写' (xiě) significa escribir."
   },
   {
     id: 22,
     part: 1,
     type: 'true-false',
-    question: { text: '听', pinyin: 'tīng', image: 'https://img.icons8.com/color/144/headphones.png' },
+    question: { text: '听', pinyin: 'tīng', image: '🎧' },
     answer: true,
     explanation: "El carácter '听' (tīng) significa escuchar."
   },
@@ -22,7 +20,7 @@ export const readingQuestions = [
     id: 23,
     part: 1,
     type: 'true-false',
-    question: { text: '菜', pinyin: 'cài', image: 'https://img.icons8.com/color/144/tea-cup.png' },
+    question: { text: '菜', pinyin: 'cài', image: '🍵' },
     answer: false,
     explanation: "'菜' (cài) significa comida/verduras, pero la imagen muestra té."
   },
@@ -30,37 +28,36 @@ export const readingQuestions = [
     id: 24,
     part: 1,
     type: 'true-false',
-    question: { text: '他', pinyin: 'tā', image: 'https://img.icons8.com/color/144/woman-profile.png' },
+    question: { text: '他', pinyin: 'tā', image: '👩' },
     answer: false,
-    explanation: "'他' (tā) se refiere a 'él' (hombre), pero la imagen muestra a una mujer (她 tā)."
+    explanation: "'他' (tā) es 'él', pero la imagen muestra a una mujer (她)."
   },
   {
     id: 25,
     part: 1,
     type: 'true-false',
-    question: { text: '狗', pinyin: 'gǒu', image: 'https://img.icons8.com/color/144/dog.png' },
+    question: { text: '狗', pinyin: 'gǒu', image: '🐶' },
     answer: true,
     explanation: "'狗' (gǒu) significa perro."
   },
 
   // PART 2: Match sentence to Image
-  // Exam H10901, questions 26-30
   {
     id: 26,
     part: 2,
     type: 'matching-image',
     images: [
-      { id: 'A', url: 'https://img.icons8.com/color/144/gift--v1.png' },
-      { id: 'B', url: 'https://img.icons8.com/color/144/phone.png' },
-      { id: 'C', url: 'https://img.icons8.com/color/144/fruits.png' },
-      { id: 'D', url: 'https://img.icons8.com/color/144/business-group.png' },
-      { id: 'E', url: 'https://img.icons8.com/color/144/reading.png' },
-      { id: 'F', url: 'https://img.icons8.com/color/144/clothes.png' }
+      { id: 'A', url: '🎁' },
+      { id: 'B', url: '📞' },
+      { id: 'C', url: '🍎' },
+      { id: 'D', url: '👥' },
+      { id: 'E', url: '📖' },
+      { id: 'F', url: '👗' }
     ],
     sentences: [
       { id: 26, text: '你好，我能吃一块儿吗？', pinyin: 'Nǐ hǎo, wǒ néng chī yíkuàir ma?', answer: 'C' },
       { id: 27, text: '她们在买衣服呢。', pinyin: 'Tāmen zài mǎi yīfu ne.', answer: 'F' },
-      { id: 28, text: '天气太热了，多吃些水果。', pinyin: 'Tiānqì tài rè le, duō chī xiē shuǐguǒ.', answer: 'C' }, // Usando C de nuevo como ejemplo
+      { id: 28, text: '天气太热了，多吃些水果。', pinyin: 'Tiānqì tài rè le, duō chī xiē shuǐguǒ.', answer: 'C' },
       { id: 29, text: '喂，你睡觉了吗？', pinyin: 'Wéi, nǐ shuìjiào le ma?', answer: 'B' },
       { id: 30, text: '我们在看看里面是什么东西。', pinyin: 'Wǒmen kànkan lǐmiàn shì shénme dōngxi.', answer: 'A' }
     ],
@@ -68,7 +65,6 @@ export const readingQuestions = [
   },
 
   // PART 3: Match Question to Answer
-  // Exam H10901, questions 31-35
   {
     id: 31,
     part: 3,
@@ -92,7 +88,6 @@ export const readingQuestions = [
   },
 
   // PART 4: Fill in the Blanks
-  // Exam H10901, questions 36-40
   {
     id: 36,
     part: 4,
@@ -109,8 +104,8 @@ export const readingQuestions = [
       { id: 36, text: '昨天是 8（  ）19 日。', pinyin: 'Zuótiān shì 8 ( ) 19 rì.', answer: 'F' },
       { id: 37, text: '那个饭馆儿在火车站（  ）。', pinyin: 'Nàge fànguǎnr zài huǒchēzhàn ( ).', answer: 'B' },
       { id: 38, text: '你会说（  ）吗？', pinyin: 'Nǐ huì shuō ( ) ma?', answer: 'E' },
-      { id: 39, text: 'A: 王先生在吗？ B: 在，请（  ），我去叫他。', pinyin: 'A: Wáng xiānsheng zài ma? B: Zài, qǐng ( ), wǒ qù jiào tā.', answer: 'A' },
-      { id: 40, peasant: 'A: 对不起，我不会做饭。 B: （  ），我会。', pinyin: 'A: Duìbuqǐ, wǒ bú huì zuò fàn. B: ( ), wǒ huì.', answer: 'C' }
+      { id: 39, text: 'A: 王先生在吗？ B: 在，请（  ），我去叫 he。', pinyin: 'A: Wáng xiānsheng zài ma? B: Zài, qǐng ( ), wǒ qù jiào tā.', answer: 'A' },
+      { id: 40, text: 'A: 对不起，我不会做饭。 B: （  ），我会。', pinyin: 'A: Duìbuqǐ, wǒ bú huì zuò fàn. B: ( ), wǒ huì.', answer: 'C' }
     ],
     example: { text: '你叫什么（  ）？', pinyin: 'Nǐ jiào shénme ( )?', answer: 'D' }
   }

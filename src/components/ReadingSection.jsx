@@ -113,13 +113,13 @@ export default function ReadingSection() {
                 {currentQuestion.type === 'true-false' && (
                     <Part1TrueFalse question={currentQuestion} onAnswer={handleAnswer} />
                 )}
-                {currentQuestion.type === 'matching' && (
+                {currentQuestion.type === 'matching-image' && (
                     <Part2Matching question={currentQuestion} onAnswer={handleAnswer} />
                 )}
-                {currentQuestion.type === 'multiple-choice' && (
+                {currentQuestion.type === 'matching-text' && (
                     <Part3MultipleChoice question={currentQuestion} onAnswer={handleAnswer} />
                 )}
-                {currentQuestion.type === 'fill-blank' && (
+                {currentQuestion.type === 'fill-blank-group' && (
                     <Part4FillBlank question={currentQuestion} onAnswer={handleAnswer} />
                 )}
             </div>

@@ -27,9 +27,9 @@ export default function Part2Matching({ question, onAnswer }) {
       {/* Image Grid A-F */}
       <div className="grid grid-cols-3 gap-3 mb-8 w-full">
         {images.map((img) => (
-          <div key={img.id} className="relative aspect-square bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-            <img src={img.url} alt={img.id} className="w-full h-full object-cover p-2" />
-            <div className="absolute top-1 left-2 font-bold text-teal-700 bg-white/80 px-1 rounded">{img.id}</div>
+          <div key={img.id} className="relative aspect-square bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm flex items-center justify-center text-5xl">
+            {img.url}
+            <div className="absolute top-1 left-2 font-bold text-teal-700 bg-white/80 px-1 rounded text-sm">{img.id}</div>
           </div>
         ))}
       </div>
