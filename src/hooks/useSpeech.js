@@ -10,13 +10,12 @@ export function useSpeech() {
   const audioRef = useRef(null);
   const isStopped = useRef(false);
 
-  // Crear un Set de palabras HSK1 para búsqueda rápida O(1)
+  // Crear un Set de palabras HSK1 para búsqueda rápida
   const vocabularySet = useMemo(() => {
     const set = new Set();
     hsk1Words.forEach(w => {
         if (w.hanzi) set.add(w.hanzi);
     });
-    // Añadimos también palabras comunes que podrían faltar o variantes
     set.add("一块儿"); set.add("一点儿"); set.add("哪儿");
     return set;
   }, []);
@@ -30,23 +29,14 @@ export function useSpeech() {
     }
   }, []);
 
-  // Función para reproducir secuencia de palabras
-  const playSequence = async (texts) => {
-      for (const t of texts) {
-          if (isStopped.current) break;
-          await playSegment(t, false); // false = no reintentar recursivamente
-      }
-  };
-
   // TOKENIZADOR HSK (Maximum Matching Algorithm)
-  // Divide una frase en palabras válidas del vocabulario HSK1
   const tokenize = (text) => {
       const tokens = [];
       let remaining = text.trim();
       
       while (remaining.length > 0) {
           let matched = false;
-          // Intentamos encontrar la palabra más larga posible desde el inicio (Max 4 chars para HSK1)
+          // Intentamos encontrar la palabra más larga posible (Max 4 chars)
           for (let len = Math.min(4, remaining.length); len > 0; len--) {
               const sub = remaining.substring(0, len);
               if (vocabularySet.has(sub)) {
@@ -56,12 +46,8 @@ export function useSpeech() {
                   break;
               }
           }
-          
           if (!matched) {
-              // Si no encontramos palabra, cogemos el primer caracter (fallback caracter a caracter)
-              // O intentamos saltar puntuación si la hubiera quedado
               const char = remaining[0];
-              // Solo añadimos si es un caracter chino o relevante, o lo añadimos siempre para no perder info
               if (char.trim()) tokens.push(char);
               remaining = remaining.substring(1);
           }
@@ -69,7 +55,68 @@ export function useSpeech() {
       return tokens;
   };
 
-  const playSegment = (text, allowFallback = true) => {
+  // REPRODUCTOR FLUIDO (GAPLESS)
+  // Crea todos los audios a la vez para cargar en paralelo y reducir pausas
+  const playSequenceGapless = (texts) => {
+    return new Promise((resolve) => {
+      if (texts.length === 0) {
+          resolve();
+          return;
+      }
+
+      console.log("Pre-cargando secuencia fluida:", texts);
+
+      // 1. Instanciar todos los audios inmediatamente
+      // Esto inicia la descarga en paralelo de todos los fragmentos
+      const audioQueue = texts.map(t => ({
+          text: t,
+          audio: new Audio(YOUDAO_TTS(t))
+      }));
+
+      let index = 0;
+
+      const playNext = () => {
+          if (isStopped.current || index >= audioQueue.length) {
+              resolve();
+              return;
+          }
+
+          const currentItem = audioQueue[index];
+          const audio = currentItem.audio;
+          
+          // Actualizamos la ref global para que el botón Stop funcione
+          audioRef.current = audio;
+          
+          // Preparamos el siguiente paso
+          const handleEnd = () => {
+              index++;
+              playNext(); // Recursión asíncrona (loop)
+          };
+
+          audio.onended = handleEnd;
+          
+          audio.onerror = (e) => {
+              console.warn("Fallo segmento en secuencia:", currentItem.text);
+              // Si falla uno, saltamos al siguiente inmediatamente
+              handleEnd();
+          };
+
+          // Reproducir
+          const playPromise = audio.play();
+          if (playPromise !== undefined) {
+              playPromise.catch(err => {
+                  console.warn("Bloqueo secuencia:", err);
+                  handleEnd();
+              });
+          }
+      };
+
+      // Iniciar la cadena
+      playNext();
+    });
+  };
+
+  const playSegment = (text) => {
     return new Promise((resolve) => {
       if (isStopped.current || !text.trim()) {
         resolve();
@@ -89,43 +136,42 @@ export function useSpeech() {
       };
 
       const safetyTimeout = setTimeout(() => {
-        console.warn("Timeout Youdao, saltando...", text);
+        // console.warn("Timeout, saltando...", text); // Silenciamos logs ruidosos
         finish();
-      }, 5000);
+      }, 4000);
 
       audio.onended = finish;
 
-      const handleError = async () => {
-          if (isDone) return;
-          isDone = true;
-          clearTimeout(safetyTimeout);
+      audio.onerror = async () => {
+        if (isDone) return;
+        isDone = true;
+        clearTimeout(safetyTimeout);
 
-          if (allowFallback && text.length > 1) {
-              console.warn(`Fallo frase '${text}'. Activando Tokenizador HSK1...`);
-              
-              // Usamos el tokenizador inteligente
-              const tokens = tokenize(text);
-              console.log("Tokens generados:", tokens);
-              
-              // Si el tokenizador devuelve lo mismo (ej: no encontró nada conocido), 
-              // forzamos división caracter a caracter para asegurar sonido.
-              if (tokens.length === 1 && tokens[0] === text) {
-                   const chars = text.split('');
-                   await playSequence(chars);
-              } else {
-                   await playSequence(tokens);
-              }
-              resolve();
-          } else {
-              resolve();
-          }
+        // FALLBACK INTELIGENTE:
+        // Si la frase falla, usamos el tokenizador y el reproductor GAPLESS
+        if (text.length > 1) {
+            console.warn(`Fallback fluido activado para: '${text}'`);
+            
+            const tokens = tokenize(text);
+            // Si el tokenizador no encuentra nada nuevo, forzamos división por caracteres
+            const finalTokens = (tokens.length === 1 && tokens[0] === text)
+                ? text.split('') 
+                : tokens;
+
+            await playSequenceGapless(finalTokens);
+            resolve();
+        } else {
+            resolve();
+        }
       };
 
-      audio.onerror = () => handleError();
-      
       audio.play().catch(err => {
-         if (allowFallback) handleError();
-         else finish();
+          // Si es error de formato/fuente, tratamos como error de carga
+          if (err.name === "NotSupportedError" || err.message.includes("supported source")) {
+             audio.onerror(err); 
+          } else {
+             finish();
+          }
       });
     });
   };
@@ -135,11 +181,10 @@ export function useSpeech() {
     stop(); 
     isStopped.current = false;
     
-    // 1. Limpieza inicial básica
-    // Quitamos puntuación para el split lógico de frases
+    // Limpieza básica
     const cleanText = text.replace(/[^\u4e00-\u9fa5a-zA-Z0-9\s]/g, " ");
 
-    // 2. Dividir por espacios si los hubiera (raro en chino) o bloques lógicos grandes
+    // Intentamos frase completa (o bloques grandes separados por espacios)
     const chunks = cleanText.split(/\s+/).filter(c => c.length > 0);
     const finalChunks = chunks.length > 0 ? chunks : [cleanText];
 
