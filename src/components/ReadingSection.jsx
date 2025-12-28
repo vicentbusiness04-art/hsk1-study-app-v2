@@ -1,11 +1,20 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { readingQuestions } from '../data/readingQuestions';
 import FeedbackModal from './FeedbackModal';
 import Part1TrueFalse from './Part1TrueFalse';
 import Part2Matching from './Part2Matching';
 import Part3MatchingText from './Part3MatchingText';
 import Part4FillBlank from './Part4FillBlank';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, RefreshCw } from 'lucide-react';
+
+const shuffleArray = (array) => {
+  const newArr = [...array];
+  for (let i = newArr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+  }
+  return newArr;
+};
 
 export default function ReadingSection() {
   const [activePart, setActivePart] = useState(1);
@@ -13,11 +22,46 @@ export default function ReadingSection() {
   const [feedback, setFeedback] = useState(null);
   const [score, setScore] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
-
   const [totalPossibleScore, setTotalPossibleScore] = useState(0);
+  const [examQuestions, setExamQuestions] = useState(null);
+
+  const generateNewExam = () => {
+    const p1 = shuffleArray(readingQuestions.filter(q => q.part === 1)).slice(0, 5);
+    
+    // Pick one random group for parts 2, 3, 4 and shuffle its internal questions
+    const getGroup = (part) => {
+        const groups = readingQuestions.filter(q => q.part === part);
+        const selected = { ...groups[Math.floor(Math.random() * groups.length)] };
+        if (selected.sentences) selected.sentences = shuffleArray(selected.sentences);
+        if (selected.questions) selected.questions = shuffleArray(selected.questions);
+        return selected;
+    };
+
+    setExamQuestions({
+      1: p1,
+      2: [getGroup(2)],
+      3: [getGroup(3)],
+      4: [getGroup(4)]
+    });
+    
+    // Reset state for new exam
+    setCurrentQuestionIndex(0);
+    setScore(0);
+    setTotalPossibleScore(0);
+    setIsFinished(false);
+    setFeedback(null);
+  };
+
+  useEffect(() => {
+    generateNewExam();
+  }, []);
+
+  if (!examQuestions) {
+      return <div className="flex items-center justify-center h-64 text-gray-500 font-medium">Generando examen...</div>;
+  }
 
   // Filter questions by active part
-  const questionsForPart = readingQuestions.filter(q => q.part === activePart);
+  const questionsForPart = examQuestions[activePart] || [];
   const currentQuestion = questionsForPart[currentQuestionIndex];
 
   const handleAnswer = (userAnswer) => {
@@ -75,6 +119,19 @@ export default function ReadingSection() {
 
   return (
     <div className="flex flex-col items-center w-full">
+      {/* Header with New Exam Button */}
+      <div className="w-full max-w-2xl flex justify-between items-center mb-6 px-2">
+          <h2 className="text-xl font-bold text-gray-800">Lectura HSK1</h2>
+          <button 
+            onClick={generateNewExam}
+            className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-600 hover:text-teal-600 hover:border-teal-200 transition-all shadow-sm"
+            title="Generar un examen completamente nuevo"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Nuevo Examen
+          </button>
+      </div>
+
       {/* Sub-tabs for Reading Parts */}
       <div className="flex gap-2 mb-6 overflow-x-auto w-full max-w-xl p-1 bg-gray-100 rounded-xl">
         {[1, 2, 3, 4].map((part) => (
@@ -103,12 +160,20 @@ export default function ReadingSection() {
                 {score} / {totalPossibleScore}
             </div>
 
-            <button 
-                onClick={restartPart}
-                className="w-full py-3 bg-teal-600 text-white rounded-xl font-bold hover:bg-teal-700 transition-colors"
-            >
-                Practicar otra vez
-            </button>
+            <div className="flex flex-col gap-3">
+                <button 
+                    onClick={restartPart}
+                    className="w-full py-3 bg-teal-600 text-white rounded-xl font-bold hover:bg-teal-700 transition-colors"
+                >
+                    Practicar esta parte otra vez
+                </button>
+                <button 
+                    onClick={generateNewExam}
+                    className="w-full py-3 bg-white border-2 border-teal-100 text-teal-600 rounded-xl font-bold hover:bg-teal-50 transition-colors"
+                >
+                    Generar nuevo examen completo
+                </button>
+            </div>
         </div>
       ) : (
           questionsForPart.length > 0 ? (
