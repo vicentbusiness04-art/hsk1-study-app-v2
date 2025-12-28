@@ -4,46 +4,65 @@ const YOUDAO_TTS = (text) => `https://dict.youdao.com/dictvoice?audio=${encodeUR
 
 export function useSpeech() {
   const audioRef = useRef(null);
-  const isPlayingRef = useRef(false);
+  // Usamos un ID de ejecución para cancelar bucles antiguos
+  const executionIdRef = useRef(0);
 
   const stop = useCallback(() => {
+    // Incrementamos el ID para invalidar cualquier bucle 'async' anterior
+    executionIdRef.current += 1;
+    
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.src = "";
+      audioRef.current.onended = null;
+      audioRef.current.onerror = null;
       audioRef.current = null;
     }
-    isPlayingRef.current = false;
   }, []);
 
   const speak = useCallback(async (text) => {
     if (!text) return;
+    
+    // 1. Detener todo lo anterior e invalidar su bucle
     stop();
+    
+    // 2. Capturar el ID de esta ejecución
+    const currentId = executionIdRef.current;
 
-    // Dividimos por puntuación y filtramos partes vacías
+    // 3. Trocear la frase
     const parts = text.split(/[，。！？,.?]/g).filter(p => p.trim().length > 0);
     
-    if (parts.length === 0) return;
-
-    isPlayingRef.current = true;
+    console.log(`Iniciando secuencia [${currentId}] con ${parts.length} partes.`);
 
     for (const part of parts) {
-      if (!isPlayingRef.current) break;
+      // 4. Verificación Crítica: Si el ID cambió, significa que el usuario
+      // pulsó otro botón o el mismo de nuevo. Cancelamos este bucle.
+      if (currentId !== executionIdRef.current) {
+        console.log(`Secuencia [${currentId}] abortada.`);
+        return;
+      }
 
       await new Promise((resolve) => {
         const audio = new Audio(YOUDAO_TTS(part.trim()));
         audioRef.current = audio;
 
         audio.onended = () => {
-          setTimeout(resolve, 200); // Pausa natural
+          audioRef.current = null;
+          // Pausa entre fragmentos para que no suene robótico
+          setTimeout(resolve, 300);
         };
 
-        audio.onerror = resolve;
-        
-        audio.play().catch(() => resolve());
+        audio.onerror = () => {
+          audioRef.current = null;
+          resolve();
+        };
+
+        audio.play().catch(err => {
+          console.warn("Auto-play bloqueado o error de carga:", err);
+          resolve();
+        });
       });
     }
-    
-    isPlayingRef.current = false;
   }, [stop]);
 
   return { speak, stop };
