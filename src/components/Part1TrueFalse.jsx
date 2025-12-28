@@ -16,14 +16,14 @@ export default function Part1TrueFalse({ question, onAnswer }) {
           <div className="text-xs font-bold text-gray-400 mb-2 uppercase">Ejemplo / 例如:</div>
           <div className="flex items-center justify-around">
             <div className="text-center">
-               <img src="https://img.icons8.com/color/96/television.png" alt="tv" className="w-16 h-16 mx-auto mb-2 opacity-60" />
+               <div className="text-4xl mb-2 opacity-60">📺</div>
                <div className="text-xs text-gray-400">diànshì</div>
                <div className="text-lg text-gray-400">电视</div>
             </div>
             <div className="text-2xl text-red-400 font-bold">✕</div>
             <div className="border-l border-gray-200 h-12"></div>
             <div className="text-center">
-               <img src="https://img.icons8.com/color/96/airplane-take-off.png" alt="plane" className="w-16 h-16 mx-auto mb-2 opacity-60" />
+               <div className="text-4xl mb-2 opacity-60">✈️</div>
                <div className="text-xs text-gray-400">fēijī</div>
                <div className="text-lg text-gray-400">飞机</div>
             </div>
@@ -34,12 +34,8 @@ export default function Part1TrueFalse({ question, onAnswer }) {
 
       {/* Main Question Card */}
       <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-200 w-full flex flex-col items-center mb-8">
-        <div className="relative mb-6">
-            <img 
-                src={question.question.image} 
-                alt="word" 
-                className="w-48 h-48 object-contain"
-            />
+        <div className="text-9xl mb-6 select-none">
+            {question.question.image}
         </div>
         
         <div className="flex flex-col items-center mb-2">
